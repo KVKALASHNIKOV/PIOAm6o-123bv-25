@@ -1,7 +1,9 @@
 from .backend.memory import InMemoryDB
 from .tui import TUI
 
-def main():
+
+def main() -> None:
+    """Run the main application."""
     try:
         db = InMemoryDB()
         ui = TUI(db)
@@ -10,6 +12,7 @@ def main():
         print("\n\nПрограмма прервана пользователем")
     except Exception as e:
         print(f"\nКритическая ошибка: {e}")
+
 
 if __name__ == "__main__":
     main()
