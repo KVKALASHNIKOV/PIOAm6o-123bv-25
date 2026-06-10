@@ -1,11 +1,11 @@
-from .backend.memory import InMemoryDB
+from .backend.file_db import FileDB
 from .tui import TUI
 
 
 def main() -> None:
     """Run the main application."""
     try:
-        db = InMemoryDB()
+        db = FileDB()
         ui = TUI(db)
         ui.run()
     except KeyboardInterrupt:
