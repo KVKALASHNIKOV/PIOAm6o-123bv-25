@@ -5,3 +5,6 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+library.json
+test_db.json
