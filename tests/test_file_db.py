@@ -184,3 +184,28 @@ class TestFileDB:
 
         assert db.records == {}
         assert db.next_id == 1
+
+    def test_update_persistence(self):
+        self.db.add_record(
+            {
+                "title": "1984",
+                "author": "Orwell",
+            }
+        )
+
+        self.db.update_record(1, {"year": 1949})
+
+        new_db = FileDB(self.filename)
+
+        record = new_db.get_record(1)
+
+        assert record["year"] == 1949
+
+    def test_delete_persistence(self):
+        self.db.add_record({"title": "1984"})
+
+        self.db.delete_record(1)
+
+        new_db = FileDB(self.filename)
+
+        assert new_db.get_all_records() == []
