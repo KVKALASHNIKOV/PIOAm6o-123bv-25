@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from typing import List, Tuple, Dict, Any
 
 from .backend.memory import InMemoryDB
@@ -6,11 +7,19 @@ from .backend.memory import InMemoryDB
 
 class TUI:
 
-    def __init__(self, db: InMemoryDB) -> None:
+    def __init__(
+        self,
+        db: InMemoryDB,
+        clear_enabled: bool = True
+    ) -> None:
         self.db: InMemoryDB = db
+        self.clear_enabled = clear_enabled
         self.fields: List[str] = ["title", "author", "year", "genre"]
 
     def clear_screen(self) -> None:
+        if not self.clear_enabled:
+            return
+
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def print_header(self) -> None:
@@ -42,41 +51,68 @@ class TUI:
             genre = record.get('genre', '')[:15]
             print(f"{record_id:<5} {title:<30} {author:<20} {year:<6} {genre:<15}")
 
-    def get_book_data(self) -> Dict[str, Any]:
+    def get_book_data(
+        self,
+        current_data: Dict[str, Any] | None = None
+    ) -> Dict[str, Any]:
         print("\nВведите данные книги:")
 
-        title = input("Название: ").strip()
-        if not title:
+        data = {}
+
+        title = input(
+            f"Название [{current_data.get('title', '')}]: "
+        ).strip() if current_data else input("Название: ").strip()
+
+        if title:
+            data["title"] = title
+        elif current_data is None:
             raise ValueError("Название книги не может быть пустым")
 
-        author = input("Автор: ").strip()
-        if not author:
+        author = input(
+            f"Автор [{current_data.get('author', '')}]: "
+        ).strip() if current_data else input("Автор: ").strip()
+
+        if author:
+            data["author"] = author
+        elif current_data is None:
             raise ValueError("Автор не может быть пустым")
 
-        year = None
         while True:
-            year_input = input("Год издания: ").strip()
+            prompt = (
+                f"Год издания [{current_data.get('year', '')}]: "
+                if current_data
+                else "Год издания: "
+            )
+
+            year_input = input(prompt).strip()
+
             if not year_input:
                 break
+
             try:
                 year = int(year_input)
-                if year < 0 or year > 2026:
-                    print("Ошибка: год должен быть от 0 до 2026")
+
+                current_year = datetime.now().year
+
+                if year < 0 or year > current_year:
+                    print(f"Ошибка: год должен быть от 0 до {current_year}")
                     continue
+
+                data["year"] = year
                 break
+
             except ValueError:
                 print("Ошибка: год должен быть числом")
 
-        genre = input("Жанр: ").strip()
+        genre = input(
+            f"Жанр [{current_data.get('genre', '')}]: "
+        ).strip() if current_data else input("Жанр: ").strip()
 
-        data = {
-            "title": title,
-            "author": author,
-            "genre": genre,
-        }
-
-        if year is not None:
-            data["year"] = year
+        if current_data:
+            if genre:
+                data["genre"] = genre
+        else:
+            data["genre"] = genre
 
         return data
 
@@ -133,7 +169,12 @@ class TUI:
             current = self.db.get_record(record_id)
             print(f"\nТекущие данные: {current}")
 
-            data = self.get_book_data()
+            data = self.get_book_data(current)
+
+            if not data:
+                print("\nИзменения не внесены")
+                return
+
             updated = self.db.update_record(record_id, data)
             print(f"\nКнига обновлена: {updated}")
         except KeyError as e:
