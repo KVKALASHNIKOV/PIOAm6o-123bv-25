@@ -2,17 +2,15 @@ import os
 from datetime import datetime
 from typing import List, Tuple, Dict, Any
 
-from .backend.memory import InMemoryDB
-
 
 class TUI:
 
     def __init__(
         self,
-        db: InMemoryDB,
+        db: Any,
         clear_enabled: bool = True
     ) -> None:
-        self.db: InMemoryDB = db
+        self.db = db
         self.clear_enabled = clear_enabled
         self.fields: List[str] = ["title", "author", "year", "genre"]
 
