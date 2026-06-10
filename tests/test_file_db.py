@@ -176,7 +176,7 @@ class TestFileDB:
         assert record["title"] == "1984"
         assert record["author"] == "Orwell"
 
-  def test_load_invalid_json(self):
+    def test_load_invalid_json(self):
         with open(self.filename, "w", encoding="utf-8") as file:
             file.write("{ invalid json")
 
