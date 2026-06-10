@@ -1,13 +1,24 @@
+from .backend.memory import InMemoryDB
 from .backend.file_db import FileDB
 from .tui import TUI
 
 
 def main() -> None:
-    """Run the main application."""
     try:
-        db = FileDB()
+        print("Выберите тип базы данных:")
+        print("1. In-Memory")
+        print("2. FileDB")
+
+        choice = input("Ваш выбор: ").strip()
+
+        if choice == "2":
+            db = FileDB()
+        else:
+            db = InMemoryDB()
+
         ui = TUI(db)
         ui.run()
+
     except KeyboardInterrupt:
         print("\n\nПрограмма прервана пользователем")
     except Exception as e:
