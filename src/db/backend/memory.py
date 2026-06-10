@@ -14,19 +14,24 @@ class InMemoryDB:
             raise TypeError("Данные должны быть словарем")
 
         record_id = self.next_id
-        self.records[record_id] = data
+        self.records[record_id] = data.copy()
         self.next_id += 1
 
         return record_id
 
+
     def get_all_records(self) -> List[Tuple[int, Dict[str, Any]]]:
-        return list(self.records.items())
+        return [
+            (record_id, record.copy())
+            for record_id, record in self.records.items()
+        ]
+
 
     def get_record(self, record_id: int) -> Dict[str, Any]:
         if record_id not in self.records:
             raise KeyError(f"Запись с ID {record_id} не найдена")
 
-        return self.records[record_id]
+        return self.records[record_id].copy()
 
     def filter_records(self, filters: Dict[str, Any]) -> List[Tuple[int, Dict[str, Any]]]:
         if not isinstance(filters, dict):
@@ -43,7 +48,7 @@ class InMemoryDB:
                     break
 
             if match:
-                result.append((record_id, record))
+                result.append((record_id, record.copy()))
 
         return result
 
@@ -51,12 +56,15 @@ class InMemoryDB:
         if record_id not in self.records:
             raise KeyError(f"Запись с ID {record_id} не найдена")
 
+        if not isinstance(data, dict):
+            raise TypeError("Данные должны быть словарем")
+
         self.records[record_id].update(data)
 
-        return self.records[record_id]
+        return self.records[record_id].copy()
 
     def delete_record(self, record_id: int) -> Dict[str, Any]:
         if record_id not in self.records:
             raise KeyError(f"Запись с ID {record_id} не найдена")
 
-        return self.records.pop(record_id)
+        return self.records.pop(record_id).copy()
