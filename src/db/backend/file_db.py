@@ -12,6 +12,7 @@ class FileDB(BaseDB):
         self.filename = Path(filename)
         self.records: Dict[int, Dict[str, Any]] = {}
         self.next_id: int = 1
+        self.schema: List[str] = ["title", "author", "year", "genre"]
 
         self._load()
 
@@ -22,6 +23,10 @@ class FileDB(BaseDB):
         try:
             with self.filename.open("r", encoding="utf-8") as file:
                 data = json.load(file)
+            self.schema = data.get(
+                "schema",
+                ["title", "author", "year", "genre"]
+            )
 
             self.next_id = data.get("next_id", 1)
 
@@ -37,6 +42,7 @@ class FileDB(BaseDB):
 
     def _save(self) -> None:
         data = {
+            "schema": self.schema,
             "next_id": self.next_id,
             "records": self.records,
         }
@@ -52,6 +58,11 @@ class FileDB(BaseDB):
     def add_record(self, data: Dict[str, Any]) -> int:
         if not isinstance(data, dict):
             raise TypeError("Данные должны быть словарем")
+        for key in data:
+            if key not in self.schema:
+                raise ValueError(
+                    f"Поле {key} отсутствует в схеме"
+                )
 
         record_id = self.next_id
         self.records[record_id] = data.copy()
@@ -79,6 +90,11 @@ class FileDB(BaseDB):
     ) -> List[Tuple[int, Dict[str, Any]]]:
         if not isinstance(filters, dict):
             raise TypeError("Фильтры должны быть словарем")
+        for key in filters:
+            if key not in self.schema:
+                raise ValueError(
+                    f"Поле {key} отсутствует в схеме"
+                )
 
         result = []
 
@@ -105,6 +121,11 @@ class FileDB(BaseDB):
 
         if not isinstance(data, dict):
             raise TypeError("Данные должны быть словарем")
+        for key in data:
+            if key not in self.schema:
+                raise ValueError(
+                    f"Поле {key} отсутствует в схеме"
+                )
 
         self.records[record_id].update(data)
 
