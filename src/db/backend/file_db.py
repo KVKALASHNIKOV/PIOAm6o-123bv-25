@@ -35,11 +35,10 @@ class FileDB(BaseDB):
                 for record_id, record in data.get("records", {}).items()
             }
 
-        except (json.JSONDecodeError, OSError):
-            print("Ошибка загрузки файла, создана пустая база данных")
-            self.records = {}
-            self.next_id = 1
-            self.schema = ["title", "author", "year", "genre"]
+        except (json.JSONDecodeError, OSError) as error:
+            raise RuntimeError(
+                f"Файл базы данных поврежден: {error}"
+            )
 
     def _save(self) -> None:
         data = {
@@ -48,12 +47,18 @@ class FileDB(BaseDB):
             "records": self.records,
         }
 
-        with self.filename.open("w", encoding="utf-8") as file:
-            json.dump(
-                data,
-                file,
-                ensure_ascii=False,
-                indent=4
+        try:
+            with self.filename.open("w", encoding="utf-8") as file:
+                json.dump(
+                    data,
+                    file,
+                    ensure_ascii=False,
+                    indent=4
+                )
+
+        except OSError as error:
+            raise RuntimeError(
+                f"Ошибка сохранения базы данных: {error}"
             )
 
     def add_record(self, data: Dict[str, Any]) -> int:
