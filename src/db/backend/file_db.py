@@ -39,6 +39,7 @@ class FileDB(BaseDB):
             print("Ошибка загрузки файла, создана пустая база данных")
             self.records = {}
             self.next_id = 1
+            self.schema = ["title", "author", "year", "genre"]
 
     def _save(self) -> None:
         data = {
