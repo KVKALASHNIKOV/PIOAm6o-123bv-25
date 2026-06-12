@@ -2,8 +2,9 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from .base import BaseDB
 
-class FileDB:
+class FileDB(BaseDB):
 
     def __init__(self, filename: str = "library.json") -> None:
         self.filename = Path(filename)
