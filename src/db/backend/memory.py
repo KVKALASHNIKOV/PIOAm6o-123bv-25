@@ -2,8 +2,10 @@ from typing import Any, Dict, List, Tuple
 
 from .base import BaseDB
 
+
 class InMemoryDB(BaseDB):
     """База данных в оперативной памяти."""
+    
     def __init__(self) -> None:
         self.records: Dict[int, Dict[str, Any]] = {}
         self.next_id: int = 1
@@ -52,7 +54,11 @@ class InMemoryDB(BaseDB):
 
         return result
 
-    def update_record(self, record_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_record(
+        self,
+        record_id: int,
+        data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         if record_id not in self.records:
             raise KeyError(f"Запись с ID {record_id} не найдена")
 
