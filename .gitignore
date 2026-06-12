@@ -8,3 +8,5 @@ Thumbs.db
 
 library.json
 test_db.json
+
+.coverage
