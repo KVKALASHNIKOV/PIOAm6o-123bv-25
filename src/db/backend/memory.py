@@ -1,9 +1,8 @@
-"""In-memory database backend implementation."""
-
 from typing import Any, Dict, List, Tuple
 
+from .base import BaseDB
 
-class InMemoryDB:
+class InMemoryDB(BaseDB):
 
     def __init__(self) -> None:
         self.records: Dict[int, Dict[str, Any]] = {}
