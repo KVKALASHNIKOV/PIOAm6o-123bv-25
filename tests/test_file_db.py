@@ -1,27 +1,18 @@
-import os
-
 import pytest
 
 from src.db.backend.file_db import FileDB
 
+@pytest.fixture
+def db(tmp_path):
+    filename = tmp_path / "test_db.json"
+    return FileDB(filename)
+    
 
 class TestFileDB:
 
-    def setup_method(self):
-        self.filename = "test_db.json"
-
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
-
-        self.db = FileDB(self.filename)
-
-    def teardown_method(self):
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
-
-    def test_add_record_success(self):
+    def test_add_record_success(self, db):
         data = {"title": "1984", "author": "Orwell"}
-        record_id = self.db.add_record(data)
+        record_id = db.add_record(data)
 
         assert record_id == 1
         assert self.db.records[1] == data
