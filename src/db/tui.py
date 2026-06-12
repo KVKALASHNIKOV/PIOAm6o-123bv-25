@@ -22,7 +22,14 @@ class TUI:
 
     def print_header(self) -> None:
         print("=" * 50)
-        print("IN-MEMORY DATABASE: БИБЛИОТЕКА")
+
+        db_name = self.db.__class__.__name__
+
+        if db_name == "FileDB":
+            print("FILE DATABASE: БИБЛИОТЕКА")
+        else:
+            print("IN-MEMORY DATABASE: БИБЛИОТЕКА")
+
         print("=" * 50)
 
     def print_menu(self) -> None:
