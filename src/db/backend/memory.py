@@ -9,10 +9,17 @@ class InMemoryDB(BaseDB):
     def __init__(self) -> None:
         self.records: Dict[int, Dict[str, Any]] = {}
         self.next_id: int = 1
+        self.schema: List[str] = ["title", "author", "year", "genre"]
 
     def add_record(self, data: Dict[str, Any]) -> int:
         if not isinstance(data, dict):
             raise TypeError("Данные должны быть словарем")
+
+        for key in data:
+            if key not in self.schema:
+                raise ValueError(
+                    f"Поле {key} отсутствует в схеме"
+                )
 
         record_id = self.next_id
         self.records[record_id] = data.copy()
@@ -38,6 +45,11 @@ class InMemoryDB(BaseDB):
     ) -> List[Tuple[int, Dict[str, Any]]]:
         if not isinstance(filters, dict):
             raise TypeError("Фильтры должны быть словарем")
+        for key in filters:
+            if key not in self.schema:
+                raise ValueError(
+                    f"Поле {key} отсутствует в схеме"
+                )
 
         result = []
 
@@ -64,6 +76,11 @@ class InMemoryDB(BaseDB):
 
         if not isinstance(data, dict):
             raise TypeError("Данные должны быть словарем")
+        for key in data:
+            if key not in self.schema:
+                raise ValueError(
+                    f"Поле {key} отсутствует в схеме"
+                )
 
         self.records[record_id].update(data)
 
