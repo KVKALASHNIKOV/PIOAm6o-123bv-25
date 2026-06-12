@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 from .base import BaseDB
 
 class InMemoryDB(BaseDB):
-
+    """База данных в оперативной памяти."""
     def __init__(self) -> None:
         self.records: Dict[int, Dict[str, Any]] = {}
         self.next_id: int = 1
@@ -18,13 +18,11 @@ class InMemoryDB(BaseDB):
 
         return record_id
 
-
     def get_all_records(self) -> List[Tuple[int, Dict[str, Any]]]:
         return [
             (record_id, record.copy())
             for record_id, record in self.records.items()
         ]
-
 
     def get_record(self, record_id: int) -> Dict[str, Any]:
         if record_id not in self.records:
@@ -32,7 +30,10 @@ class InMemoryDB(BaseDB):
 
         return self.records[record_id].copy()
 
-    def filter_records(self, filters: Dict[str, Any]) -> List[Tuple[int, Dict[str, Any]]]:
+    def filter_records(
+        self,
+        filters: Dict[str, Any]
+    ) -> List[Tuple[int, Dict[str, Any]]]:
         if not isinstance(filters, dict):
             raise TypeError("Фильтры должны быть словарем")
 
