@@ -4,8 +4,10 @@ from typing import Any, Dict, List, Tuple
 
 from .base import BaseDB
 
-class FileDB(BaseDB):
 
+class FileDB(BaseDB):
+    """Файловая база данных с хранением в JSON."""
+    
     def __init__(self, filename: str = "library.json") -> None:
         self.filename = Path(filename)
         self.records: Dict[int, Dict[str, Any]] = {}
@@ -18,7 +20,7 @@ class FileDB(BaseDB):
             return
 
         try:
-            with open(self.filename, "r", encoding="utf-8") as file:
+            with self.filename.open("r", encoding="utf-8") as file:
                 data = json.load(file)
 
             self.next_id = data.get("next_id", 1)
@@ -29,6 +31,7 @@ class FileDB(BaseDB):
             }
 
         except (json.JSONDecodeError, OSError):
+            print("Ошибка загрузки файла, создана пустая база данных")
             self.records = {}
             self.next_id = 1
 
@@ -38,7 +41,7 @@ class FileDB(BaseDB):
             "records": self.records,
         }
 
-        with open(self.filename, "w", encoding="utf-8") as file:
+        with self.filename.open("w", encoding="utf-8") as file:
             json.dump(
                 data,
                 file,
@@ -70,7 +73,10 @@ class FileDB(BaseDB):
 
         return self.records[record_id].copy()
 
-    def filter_records(self, filters: Dict[str, Any]) -> List[Tuple[int, Dict[str, Any]]]:
+    def filter_records(
+        self,
+        filters: Dict[str, Any]
+    ) -> List[Tuple[int, Dict[str, Any]]]:
         if not isinstance(filters, dict):
             raise TypeError("Фильтры должны быть словарем")
 
@@ -89,7 +95,11 @@ class FileDB(BaseDB):
 
         return result
 
-    def update_record(self, record_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_record(
+        self,
+        record_id: int,
+        data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         if record_id not in self.records:
             raise KeyError(f"Запись с ID {record_id} не найдена")
 
